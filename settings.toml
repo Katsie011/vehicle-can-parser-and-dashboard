@@ -1,0 +1,10 @@
+[paths]
+dbc_path = "./DBCs/"
+data_files = "./data_files/"
+export_dir = "./processed_files/"
+
+[export_settings]
+file_format = ".csv"
+
+timestamps_as_date = true
+
