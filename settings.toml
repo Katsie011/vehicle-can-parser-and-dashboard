@@ -1,5 +1,6 @@
+
 [paths]
-dbc_path = "./DBCs/"
+dbcs_dir = "./DBCs/"
 data_files = "./data_files/"
 export_dir = "./processed_files/"
 
@@ -7,4 +8,3 @@ export_dir = "./processed_files/"
 file_format = ".csv"
 
 timestamps_as_date = true
-
