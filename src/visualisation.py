@@ -11,7 +11,9 @@ def plot_lines(sampled_df: pd.DataFrame, interesting_cols: List[str], fig_path=N
     # Plotting the interesting columns with improved performance and cleaner rendering for high density of points
     fig, ax = plt.subplots(figsize=(10, 6))
     for col in interesting_cols:
-        ax.plot(sampled_df.index, sampled_df[col], "-", label=col, linewidth=0.5)
+        subset = sampled_df[pd.notna(sampled_df[col])]
+        ax.plot(subset.index, subset[col], label=col, linewidth=0.5)
+        # ax.scatter(sampled_df.index, sampled_df[col], label=col)
 
     ax.set_xlabel('Timestamps')
     ax.set_ylabel(', '.join(interesting_cols))  # Set y-label based on input columns
@@ -19,7 +21,7 @@ def plot_lines(sampled_df: pd.DataFrame, interesting_cols: List[str], fig_path=N
     ax.legend(title="Legend")  # Add a legend with a title
     ax.grid(True)
     
-    plt.tight_layout()  # Optimize space in the layout
+    plt.tight_layout(pad=3.0)  # Optimize space in the layout
 
     if fig_path is not None:
         fig.savefig(fig_path, format='png', dpi=300)  # Save as high-resolution image if path is provided
@@ -50,7 +52,7 @@ def multi_plot_line(sampled_df: pd.DataFrame, columns_sets_per_plot: List[List[s
 
 import contextlib
 from rich.errors import NotRenderableError
-def rich_display_dataframe(df, title="Dataframe", lim_cols = 20, lim_rows = 50) -> None:
+def rich_display_dataframe(df: pd.DataFrame, title="Dataframe", lim_cols = 10, lim_rows = 20) -> None:
     """Display dataframe as table using rich library.
         Args:
             df (pd.DataFrame): dataframe to display
@@ -66,11 +68,17 @@ def rich_display_dataframe(df, title="Dataframe", lim_cols = 20, lim_rows = 50) 
     df = df.astype(str)
     table = Table(title=title)
     for c, col in enumerate(df.columns):
-        if c>lim_cols: break
+        if c>lim_cols: 
+            print(f"Skipping the rest of the columns after {lim_cols}")
+            break
         table.add_column(col)
     for r, row in enumerate(df.values):
         if r>lim_rows:
+            print(f"Skipping the rest of the rows after {lim_rows}")
             break
         with contextlib.suppress(NotRenderableError):
-            table.add_row(*row)
+            print(f"Adding row: {row}")
+            table.add_row(*row[:lim_rows])
     print(table)
+
+

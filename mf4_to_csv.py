@@ -26,38 +26,40 @@ This structured approach ensures that only pertinent data is extracted, reducing
 
 from typing import Dict, Iterable, List
 import can
-from  asammdf import MDF, types
+from asammdf import MDF, types
 import cantools
 import pandas as pd
 import numpy as np
 from rich import print, spinner
 from rich.console import Console
 import os
-import visualisation as vis
-import mf4_helpers
+import src.visualisation as vis
+import src.mf4_helpers as mf4_helpers
 
 console = Console()
 
 
 mf4_file = None
-while mf4_file is None: 
-   text = input("Input the path to the mf4 file you would like to parse:\n")
-   if not os.path.splitext(text)[1].lower() == 'mf4':
-      print("[red bold]The file path you have given is not an mf4")
-      continue
-   if not os.path.exists(text):
-      print("[red bold]The path you have given does not exist")
-      continue
+while mf4_file is None:
+    text = input("Input the path to the mf4 file you would like to parse:\n")
+    if os.path.splitext(text)[1].lower() != ".mf4":
+        print("[red bold]The file path you have given is not an mf4")
+        continue
+    if not os.path.exists(text):
+        print("[red bold]The path you have given does not exist")
+        continue
 
-   mf4_file = text
+    mf4_file = text
 
 name_input = os.path.splitext(os.path.basename(mf4_file))[0]
 
 config = mf4_helpers.get_config()
 paths = config.get("paths", {})
 if type(paths) is not Dict:
-   print("[yellow]⚠️Paths not setup in the settings. Using defaults. Otherwise, add a [paths] section to include.")
-   paths: Dict[str, str] = {}
+    print(
+        "[yellow]⚠️Paths not setup in the settings. Using defaults. Otherwise, add a [paths] section to include."
+    )
+    paths: Dict[str, str] = {}
 
 export_dir = paths.get("export_dir", "./processed_files/")
 os.makedirs(export_dir, exist_ok=True)
@@ -68,33 +70,49 @@ print(f"[bold yellow]Importing all DBCs from:\n{os.path.abspath(dbc_database_dir
 
 # with spinner.Spinner(name="spnr_dbc", text="Loading DBCs", style='aesthetic') as spinner:
 with console.status("Loading DBCs") as status:
-   dbc_files: List[types.DbcFileType] = []
-   import os
-   for root, dirs, files in os.walk(dbc_database_dir):
-      for file in files:
-         if file.endswith(".dbc"):
-               dbc_files.append((os.path.join(root, file),0))
+    dbc_files: List[types.DbcFileType] = []
+    import os
 
-   dbcs: Dict[types.BusType, Iterable[types.DbcFileType]] = {"CAN": dbc_files, "LIN": []}
+    for root, dirs, files in os.walk(dbc_database_dir):
+        for file in files:
+            if file.endswith(".dbc"):
+                dbc_files.append((os.path.join(root, file), 0))
+
+    dbcs: Dict[types.BusType, Iterable[types.DbcFileType]] = {
+        "CAN": dbc_files,
+        "LIN": [],
+    }
 
 
 with console.status("Loading MF4 File:") as status:
-   mdf = MDF(mf4_file)
-   df_raw_mdf = mf4_helpers.mdf_to_df(mdf, config=config)
-   mf4_helpers.mdf_to_raw_bytes(df_mf4=df_raw_mdf, config=config).to_csv(os.path.join(export_dir, f"raw_bytes_{name_input}"))
+    mdf = MDF(mf4_file)
+    df_raw_mdf = mf4_helpers.mdf_to_df(mdf, config=config)
+    mf4_helpers.mdf_to_raw_bytes(df_mf4=df_raw_mdf, config=config).to_csv(
+        os.path.join(export_dir, f"raw_bytes_{name_input}.csv")
+    )
 
 with console.status("Filtering for messages from DBCs") as status:
-   filtered_bus = mdf.extract_bus_logging(database_files=dbcs)
-   df_mdf_filtered = mf4_helpers.mdf_to_df(filtered_bus, config=config)
-   df_mdf_filtered.to_csv(os.path.join(export_dir, f"filtered_{name_input}"))
+    filtered_bus = mdf.extract_bus_logging(database_files=dbcs)
+    df_mdf_filtered = mf4_helpers.mdf_to_df(filtered_bus, config=config)
+    df_mdf_filtered.to_csv(os.path.join(export_dir, f"filtered_{name_input}.csv"))
 
 
-if input("Would you like to preview the data?").lower() == 'y':
-   vis.rich_display_dataframe(df_mdf_filtered)
+print("Messages in dataframe:", df_mdf_filtered.columns)
 
-   if input("Are there any messages you would like to plot?").lower() == 'y':
-      cols = input("Input the column names separated by commas. e.g. voltage, current, DC_MaxCurrentHV1").split(',')
-      fig = vis.plot_lines(sampled_df=df_mdf_filtered, interesting_cols=cols)
-      if input("Save figure?").lower() == 'y':
-         path = input("Enter the path to save to:")
-         fig.savefig(path,format='png', dpi=300)  )
+# if input("Would you like to preview the data? <y/n> \n").lower() == 'y':
+# vis.rich_display_dataframe(df_mdf_filtered)
+print("[yellow]Messages in the file:")
+first_col = df_mdf_filtered.columns[0]
+console.print(df_mdf_filtered[pd.notna(df_mdf_filtered[first_col])].head(20))
+
+cols = input(
+    "Input the column names separated by commas. e.g. voltage, current, DC_MaxCurrentHV1. Otherwise, press <enter> to skip:\n"
+).split(",")
+if len(cols) >= 0 and cols[0]:
+    cols = [c.strip() for c in cols]
+    print("[green]Displaying the following columns:", cols)
+    fig = vis.plot_lines(sampled_df=df_mdf_filtered, interesting_cols=cols)
+
+    if input("Save figure? <y/n>").lower() == "y":
+        path = input("Enter the path to save to:")
+        fig.savefig(path, format="png", dpi=300)
