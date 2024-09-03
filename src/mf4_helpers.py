@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict
 import pandas as pd
 import toml
@@ -18,14 +19,19 @@ def mdf_to_df(mf4: MDF, config: Dict[str, str]):
         print("[red]Config file has bad export settings. Using defaults instead.")
         export_settings = {}
     basenames = bool(export_settings.get("only_basenames", False))
-    interpolate = bool(export_settings.get("", False))
+    interpolate = bool(export_settings.get("use_interpolation", False))
     date = bool(export_settings.get("timestamps_as_date", False))
 
     df = mf4.to_dataframe(
         time_as_date=date, only_basenames=basenames, use_interpolation=interpolate
     )
     start_time = mf4.start_time
-    df["time"] = start_time + pd.to_timedelta(df.index, unit="ms")
+
+    if type(df.index[0]) is datetime:
+        deltas = df.index.difference
+    else:
+        deltas = df.index - df.index[0]
+    df["date"] = start_time + deltas
     return df
 
 
