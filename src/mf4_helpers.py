@@ -14,18 +14,18 @@ def get_config(config_path="./settings.toml"):
 
 def mdf_to_df(mf4: MDF, config: Dict[str, str]):
     export_settings = config.get("export_settings", {})
-    if type(export_settings) is not Dict:
+    if type(export_settings) is not dict:
         print("[red]Config file has bad export settings. Using defaults instead.")
         export_settings = {}
     basenames = bool(export_settings.get("only_basenames", False))
-    interpolate = bool(export_settings.get("use_interpolation", False))
-    date = bool(export_settings.get("time_as_date", False))
+    interpolate = bool(export_settings.get("", False))
+    date = bool(export_settings.get("timestamps_as_date", False))
 
     df = mf4.to_dataframe(
         time_as_date=date, only_basenames=basenames, use_interpolation=interpolate
     )
     start_time = mf4.start_time
-    df["time"] = start_time + pd.to_timedelta(df.index, unit='ms')
+    df["time"] = start_time + pd.to_timedelta(df.index, unit="ms")
     return df
 
 

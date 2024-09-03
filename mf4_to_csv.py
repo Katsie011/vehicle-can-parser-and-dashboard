@@ -55,7 +55,7 @@ name_input = os.path.splitext(os.path.basename(mf4_file))[0]
 
 config = mf4_helpers.get_config()
 paths = config.get("paths", {})
-if type(paths) is not Dict:
+if type(paths) is not dict:
     print(
         "[yellow]⚠️Paths not setup in the settings. Using defaults. Otherwise, add a [paths] section to include."
     )

@@ -6,5 +6,6 @@ export_dir = "./processed_files/"
 
 [export_settings]
 file_format = ".csv"
-
+use_interpolation = false
 timestamps_as_date = true
+only_basenames = false
