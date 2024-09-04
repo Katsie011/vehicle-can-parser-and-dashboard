@@ -28,9 +28,9 @@ def mdf_to_df(mf4: MDF, config: Dict[str, str]):
     start_time = mf4.start_time
 
     if type(df.index[0]) is datetime:
-        deltas = df.index.difference
-    else:
         deltas = df.index - df.index[0]
+    else:
+        deltas = pd.to_timedelta(df.index, unit="ns")
     df["date"] = start_time + deltas
     return df
 
