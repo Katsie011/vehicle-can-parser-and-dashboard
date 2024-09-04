@@ -30,10 +30,14 @@ def create_app(df):
         if not selected_columns:
             return "Please select at least one column to plot."
         vals = df_mdf_filtered[selected_columns]
+
+        # TODO this is wrong. We need to add plots for each column on its own.
+        # TODO rewrite and seperate.
         vals = vals[np.all(pd.notna(vals), axis=1)]
         print(vals)
         return vals.hvplot()
 
+    # TODO trash gauge. It's just filler.
     gauge = {
         "tooltip": {"formatter": "{a} <br/>{b} : {c}%"},
         "series": [
@@ -73,9 +77,12 @@ def create_app(df):
 
 
 print("Re-loading the mf4 file")
+
+# TODO add a file selector GUI.
 df_mdf_filtered = pd.read_csv(
-    "/Users/michaelkatsoulis/Documents/4QT/CAN Parser/processed_files/filtered_61494E67_00000039_00000001-0B1D281D351973497D3A29B6168B8C9C2A6143BC0B521D2EE92BB91BB844ECC4.csv",
+    "../processed_files/filtered_61494E67_00000039_00000001-0B1D281D351973497D3A29B6168B8C9C2A6143BC0B521D2EE92BB91BB844ECC4.csv",
 )
+
 df_mdf_filtered.set_index("timestamps", inplace=True)
 
 print("Getting runtime for log:")
@@ -93,18 +100,12 @@ template = pn.template.FastListTemplate(
     ],
 )
 
+# TODO create pannels to plot each of: Motion, Temperature, Battery, Emissions.
 app = create_app(df_mdf_filtered)
+
+# TODO in sideline add summaries for: runtime, power used, power generaed, distance travelled
+
 template.main.append(app)
-
-
-# template.main.append(
-#     pn.Row(
-#         slider,
-#         gauge_pane,
-#     )
-# )
-
-
 template.servable()
 
 
