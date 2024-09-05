@@ -1,0 +1,3 @@
+[submodule "DBCs/4QT"]
+	path = DBCs/4QT
+	url = https://github.com/4qt-ch/CAN_database
