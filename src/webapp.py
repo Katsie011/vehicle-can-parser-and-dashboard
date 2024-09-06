@@ -15,7 +15,7 @@ pn.extension()
 # File selector GUI added for user to select or upload a file.
 # file_input = pn.widgets.FileInput(accept=".csv", name="Upload CSV File")
 file_input = pn.widgets.FileSelector(
-    name="Upload CSV File", directory=".", file_pattern="*.csv"
+    name="Upload CSV File", directory="processed_files", file_pattern="*.csv"
 )
 
 
@@ -48,17 +48,17 @@ def create_app(file_list=None):
         def update_plot(selected_columns: List[str]):
             if not selected_columns:
                 return "Please select at least one column to plot."
-            return vis.hvplot_df_by_col(df=df, cols=selected_columns)
+            return vis.hvplot_df_by_col(df=df, cols=selected_columns, xlabel="Time (s)")
 
         # Layout the components
         app_layout = pn.GridBox(
             pn.Row(pn.panel(indicators)),
             pn.Row(
                 pn.Column(
-                    "## Temperatures 🌡️",
+                    "# Temperatures 🌡️\n---",
                     vis.plot_temperatures(df=df),
                     "---",
-                    "## Interactive Data Visualiser 📈",
+                    "# Interactive Data Visualiser 📈 \n---",
                     update_plot,
                     pn.Card(
                         column_selector,
@@ -68,14 +68,14 @@ def create_app(file_list=None):
                     ),
                 ),
                 pn.Column(
-                    "## Power Consumption ⚡️",
+                    "# Power Consumption ⚡️\n---",
                     pn.panel(
                         vis.power_plot(
                             df=df, voltage_col="Voltage", current_col="Current"
                         )
                     ),
                     "---",
-                    "## Battery Charge 🔋",
+                    "# Battery Charge 🔋\n---",
                     vis.battery_soc_plot(df=df, soc_column="Pack_SOC"),
                 ),
             ),

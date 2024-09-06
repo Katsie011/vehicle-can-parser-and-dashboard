@@ -157,6 +157,7 @@ def battery_soc_plot(df: pd.DataFrame, soc_column: str):
             line_color="green",
             line_alpha=0.6,
             ylim=(0, 100),
+            xlabel="Time (s)",
         )
 
 
@@ -177,6 +178,7 @@ def power_plot(df: pd.DataFrame, voltage_col="Voltage", current_col="Current"):
         grid=True,
         line_color="darkgreen",
         line_alpha=0.6,
+        xlabel="Time (s)",
     )
 
 
@@ -192,4 +194,6 @@ def plot_temperatures(
     ]
 
     print("Plotting temperatures: ", temp_cols)
-    return hvplot_df_by_col(df=df, cols=temp_cols, ylabel="Temperature ( ºC )")
+    return hvplot_df_by_col(
+        df=df, cols=temp_cols, ylabel="Temperature ( ºC )", xlabel="Time (s)"
+    )
