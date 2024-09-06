@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import visualisation as vis
 import utils
+from rich import print
 
 pn.extension()
 # pn.extension(theme="dark")
@@ -19,12 +20,13 @@ file_input = pn.widgets.FileSelector(
 
 
 # # Assuming df_mdf_filtered is the DataFrame you want to display and interact with
-# @pn.depends(file_input.param.filename, watch=True)
+
+
 def create_app(file_list=None):
-    print("Recieved file:", file_list)
     if file_list is not None and file_list != []:
         # df = pd.read_csv(io.BytesIO(file))
         file = file_list[0]
+        print("[yellow bold]Reloading the file")
         df = pd.read_csv(file)
         df.set_index("timestamps", inplace=True)
 
@@ -49,18 +51,21 @@ def create_app(file_list=None):
             return vis.hvplot_df_by_col(df=df, cols=selected_columns)
 
         # Layout the components
-        app_layout = pn.Column(
-            pn.Row(indicators),
+        app_layout = pn.GridBox(
+            pn.Row(pn.panel(indicators)),
             pn.Row(
                 pn.Column(
                     "## Temperatures",
                     vis.plot_temperatures(df=df),
                     "---",
                     "## Data Visualiser",
-                    pn.panel(update_plot),
-                    "---",
-                    "### Select columns to plot:",
-                    pn.panel(column_selector, max_height=100),
+                    update_plot,
+                    pn.Card(
+                        column_selector,
+                        title="Select columns to plot:",
+                        max_height=100,
+                        collapsed=True,
+                    ),
                 ),
                 pn.Column(
                     "## Power Consumption",
@@ -76,9 +81,6 @@ def create_app(file_list=None):
 
     else:
         return file_input  # Return an empty DataFrame if no file is selected
-
-
-print("Re-loading the mf4 file")
 
 
 sidebar = [
@@ -101,7 +103,7 @@ template = pn.template.FastListTemplate(
     title="4QT IREX Log Parser",
     sidebar=sidebar,
     accent="#4099da",
-    main=[pn.panel(interactive_app)],
+    main=interactive_app,
 )
 
 # TODO create pannels to plot each of: Motion, Temperature, Battery, Emissions.
