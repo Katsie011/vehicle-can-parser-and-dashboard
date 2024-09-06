@@ -144,9 +144,25 @@ def hvplot_df_by_col(df: pd.DataFrame, cols: List[str], xlabel="", ylabel=""):
         )
 
 
+def battery_soc_plot(df: pd.DataFrame, soc_column: str):
+    if len(df) == 0 or not soc_column:
+        return empty_plot
+
+    if soc_column in df.columns:
+        return df[soc_column].hvplot.area(
+            ylabel="Power (kW)",
+            color="lightgreen",
+            alpha=0.7,
+            grid=True,
+            line_color="green",
+            line_alpha=0.6,
+            ylim=(0, 100),
+        )
+
+
 def power_plot(df: pd.DataFrame, voltage_col="Voltage", current_col="Current"):
     if len(df) == 0:
-        return
+        return empty_plot
 
     power = df[voltage_col] * df[current_col]
 

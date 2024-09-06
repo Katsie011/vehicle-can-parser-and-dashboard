@@ -74,6 +74,9 @@ def create_app(file_list=None):
                             df=df, voltage_col="Voltage", current_col="Current"
                         )
                     ),
+                    "---",
+                    "## Battery Charge",
+                    vis.battery_soc_plot(df=df, soc_column="Pack_SOC"),
                 ),
             ),
         )
