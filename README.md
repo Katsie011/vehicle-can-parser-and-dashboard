@@ -41,6 +41,10 @@ To serve it, just run the following code and follow the link in your browser:
 panel serve src/webapp.py
 ```
 
+Here is a preview of what you would see at http://localhost:5006/webapp?theme=default 
+<img width="1202" alt="image" src="https://github.com/user-attachments/assets/1a9b11e1-4c05-4028-8f22-08b898d6fbc5">
+
+
 If you would like to make any changes while developing, this command will let you see the results live:
 ```python
 panel serve src/webapp.py --autoreload
