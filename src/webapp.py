@@ -112,46 +112,4 @@ template = pn.template.FastListTemplate(
 # TODO create pannels to plot each of: Motion, Temperature, Battery, Emissions.
 # TODO in sideline add summaries for: runtime, power used, power generaed, distance travelled
 
-# template.main.append(indicators)
 template.servable()
-
-
-# col_options = list(df_mdf_filtered.columns)
-# column_selector = pn.widgets.CrossSelector(name='Columns of Interest', value=col_options[:2], options = col_options)
-
-# column_selector = pn.widgets.CheckBoxGroup(
-#     name='Select Columns',
-#     value=['timestamps', 'Voltage', 'Current'],  # Default selected values
-#     options=list(df_mdf_filtered.columns),
-#     inline=True
-# )
-
-# plot_opts = dict(
-#     responsive=True, min_height=400,
-#     # Align the curves' color with the template's color
-#     color=pn.template.FastListTemplate.accent_base_color
-# )
-# @pn.depends(column_selector.param.value)
-# def update_plot(selected_columns):
-#     if not selected_columns:
-#         return "Please select at least one column to plot."
-#     df =  df_mdf_filtered[pd.notna(df_mdf_filtered[selected_columns])]
-#     return df.hvplot()
-
-# template = pn.template.FastListTemplate(
-#     title="FastListTemplate",
-# )
-
-
-# app_layout = pn.Column(
-#     "## Data Visualisation App",
-#     "Select columns to plot:",
-#     column_selector,
-#     update_plot
-# )
-
-# template.main.append(
-#     app_layout
-# )
-
-# template.servable();
