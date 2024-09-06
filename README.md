@@ -5,6 +5,7 @@ There is also a dashboard for viewing plots of the extracted data in the browser
 
 ## Usage
 ### Setup
+If you don't have `conda` installed, you can get it via the instructions [here](https://docs.anaconda.com/miniconda/).
 
 Create a new conda environment and install the requirements using:
 ```python
