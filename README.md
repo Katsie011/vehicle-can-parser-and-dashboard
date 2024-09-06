@@ -15,6 +15,13 @@ Next, add all the DBC files you would like to use to decode the CAN messages int
 These will be used to identify messages and convert their content from raw bytes into human readable formats.
 
 
+*Note: If you have access to the internal files at 4QT gmbh, you can run the following to get the internal code.*
+
+```bash
+git submodule update --init --recursive
+```
+
+
 ### Extracting .mf4 to csv
 This tool will do a bulk extraction of any messages that it can decode with the given DBC files.  
 

@@ -1,10 +1,16 @@
 from typing import List
 import matplotlib.pyplot as plt
 import pandas as pd
+import panel as pn
 import seaborn as sns
 
 
 sns.set_theme(style="whitegrid")
+
+empty_plot = pn.Spacer(
+    styles={"background": "gray"},
+    sizing_mode="stretch_both",
+)
 
 
 def plot_lines(sampled_df: pd.DataFrame, interesting_cols: List[str], fig_path=None):
@@ -120,8 +126,9 @@ def hvplot_df_by_col(df: pd.DataFrame, cols: List[str], xlabel="", ylabel=""):
         >>> hvplot_df_by_col(df, ['column1', 'column2'])
         This will overlay the plots of 'column1' and 'column2' after dropping NAs.
     """
-    if len(cols) < 1:
-        return None
+    if len(cols) < 1 or len(df) == 0:
+        return empty_plot
+
     name = cols.pop(0)
     while name not in df.columns and len(cols) > 1:
         print(f"[yellow bold]🚧WARNING: Could not find {name} in data... skipping.")
@@ -138,6 +145,9 @@ def hvplot_df_by_col(df: pd.DataFrame, cols: List[str], xlabel="", ylabel=""):
 
 
 def power_plot(df: pd.DataFrame, voltage_col="Voltage", current_col="Current"):
+    if len(df) == 0:
+        return
+
     power = df[voltage_col] * df[current_col]
 
     # filter out nan where there were missing messages

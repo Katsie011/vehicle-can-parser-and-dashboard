@@ -1,22 +1,15 @@
+import io
 from typing import List
 import panel as pn
 import hvplot.pandas
 import pandas as pd
 import numpy as np
 import visualisation as vis
+import utils
+
 
 pn.extension()
 # pn.extension(theme="dark")
-
-# STYLING
-BRAND_COLOR = "teal"
-BRAND_TEXT_ON_COLOR = "white"
-
-CARD_STYLE = {
-    "box-shadow": "rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px",
-    "padding": "10px",
-    "border-radius": "5px",
-}
 
 
 # # Assuming df_mdf_filtered is the DataFrame you want to display and interact with
@@ -62,64 +55,32 @@ def create_app(df: pd.DataFrame):
 
 print("Re-loading the mf4 file")
 
-# TODO add a file selector GUI.
-df_mdf_filtered = pd.read_csv(
-    "processed_files/filtered_61494E67_00000039_00000001-0B1D281D351973497D3A29B6168B8C9C2A6143BC0B521D2EE92BB91BB844ECC4.csv",
-)
 
-df_mdf_filtered.set_index("timestamps", inplace=True)
-
-print("Getting runtime for log:")
-print(f"DEBUG: runtime = {df_mdf_filtered.index[-1]} - {df_mdf_filtered.index[0]}")
-runtime = df_mdf_filtered.index[-1] - df_mdf_filtered.index[0]
-hours, remainder = divmod(runtime, 3600)
-minutes, seconds = divmod(remainder, 60)
-time_string = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+# File selector GUI added for user to select or upload a file.
+file_input = pn.widgets.FileInput(accept=".csv", name="Upload CSV File")
 
 
-print(f"DEBUG: total_power = ")
-total_power = df_mdf_filtered["Voltage"] * df_mdf_filtered["Current"]
-total_power = total_power[pd.notna(total_power)].sum()
-total_power_kwh = total_power / 1000 / 60 / 60
+@pn.depends(file_input.param.value, watch=True)
+def load_data():
+    if file_input.value is not None:
+
+        df = pd.read_csv(io.BytesIO(file_input.value))
+        df.set_index("timestamps", inplace=True)
+        return df
+    else:
+        return pd.DataFrame()  # Return an empty DataFrame if no file is selected
 
 
-indicators = pn.FlexBox(
-    pn.indicators.String(
-        value=time_string,
-        name="Total Runtime",
-        # format="{value:,s}",
-        styles=CARD_STYLE,
-    ),
-    pn.indicators.Number(
-        value=total_power_kwh,
-        name="Power Consumed (kWh)",
-        format="{value:,.3f}",
-        styles=CARD_STYLE,
-    ),
-    pn.indicators.Number(
-        value=4.20,
-        name="Distance Travelled (km)",
-        format="{value:,.2f}",
-        styles=CARD_STYLE,
-    ),
-    pn.indicators.Number(
-        value=6.9,
-        name="CO2 Emmisions Saved (kg)",
-        format="{value:,.2f}",
-        styles=CARD_STYLE,
-    ),
-    pn.indicators.Number(
-        value=9.999,
-        name="Electricity Cost (chf)",
-        format="{value:,.2f}",
-        styles=CARD_STYLE,
-    ),
-    margin=(20, 5),
-)
+df_mdf_filtered = load_data()
+
+
+indicators = utils.get_indicators(df=df_mdf_filtered)
 
 
 sidebar = [
     "# IREX Dashboard\n---",
+    pn.Spacer(sizing_mode="stretch_both"),
+    file_input,
     pn.Spacer(sizing_mode="stretch_both"),
     pn.panel(
         "https://static.wixstatic.com/media/7429ff_c332d4103e494ce0b1149da82afde237~mv2.png/v1/fill/w_248,h_72,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Copy%20of%20NewLogo_rectangle_4QT.png"
