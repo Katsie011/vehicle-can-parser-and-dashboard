@@ -41,7 +41,7 @@ To serve it, just run the following code and follow the link in your browser:
 panel serve src/webapp.py
 ```
 
-Here is a preview of what you would see at [http://localhost:5006/webapp?theme=default ](http://localhost:5006/webapp?theme=dark)
+Here is a preview of what you would see at [http://localhost:5006/webapp?theme=dark ](http://localhost:5006/webapp?theme=dark)
 <img width="1170" alt="image" src="https://github.com/user-attachments/assets/f5cd65bf-815f-4611-9185-afcfc6308789">
 
 
