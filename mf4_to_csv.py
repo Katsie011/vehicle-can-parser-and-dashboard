@@ -106,7 +106,7 @@ first_col = df_mdf_filtered.columns[0]
 console.print(df_mdf_filtered[pd.notna(df_mdf_filtered[first_col])].head(20))
 
 cols = input(
-    "Input the column names separated by commas. e.g. voltage, current, DC_MaxCurrentHV1. Otherwise, press <enter> to skip:\n"
+    "If you would like to generate a plot, input the column names separated by commas. e.g. voltage, current, DC_MaxCurrentHV1. Otherwise, press <enter> to skip:\n"
 ).split(",")
 if len(cols) >= 0 and cols[0]:
     cols = [c.strip() for c in cols]
@@ -116,3 +116,5 @@ if len(cols) >= 0 and cols[0]:
     if input("Save figure? <y/n>").lower() == "y":
         path = input("Enter the path to save to:")
         fig.savefig(path, format="png", dpi=300)
+
+print(f"[green]Your files have been saved to: [bold]{export_dir}")
