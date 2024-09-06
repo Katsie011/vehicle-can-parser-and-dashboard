@@ -55,10 +55,10 @@ def create_app(file_list=None):
             pn.Row(pn.panel(indicators)),
             pn.Row(
                 pn.Column(
-                    "## Temperatures",
+                    "## Temperatures 🌡️",
                     vis.plot_temperatures(df=df),
                     "---",
-                    "## Data Visualiser",
+                    "## Interactive Data Visualiser 📈",
                     update_plot,
                     pn.Card(
                         column_selector,
@@ -68,14 +68,14 @@ def create_app(file_list=None):
                     ),
                 ),
                 pn.Column(
-                    "## Power Consumption",
+                    "## Power Consumption ⚡️",
                     pn.panel(
                         vis.power_plot(
                             df=df, voltage_col="Voltage", current_col="Current"
                         )
                     ),
                     "---",
-                    "## Battery Charge",
+                    "## Battery Charge 🔋",
                     vis.battery_soc_plot(df=df, soc_column="Pack_SOC"),
                 ),
             ),
