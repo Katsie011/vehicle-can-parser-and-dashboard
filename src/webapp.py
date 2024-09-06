@@ -38,7 +38,7 @@ def create_app(file_list=None):
 
         # Create a checkbox group for selecting columns to plot
         column_selector = pn.widgets.CheckBoxGroup(
-            value=["Voltage", "Current"],  # Default selected values
+            value=["EMB_Voltage"],  # Default selected values
             options=cols,
             # inline=True,
         )
@@ -71,12 +71,23 @@ def create_app(file_list=None):
                     "# Power Consumption ⚡️\n---",
                     pn.panel(
                         vis.power_plot(
-                            df=df, voltage_col="Voltage", current_col="Current"
+                            df=df,
+                            voltage_col="BMS_Pack_Current",
+                            current_col="BMS_Pack_Inst_Voltage",
+                            ylabel="Power Used (kW)",
+                            color="yellow",
+                            line_color="orange",
+                        )
+                        * vis.power_plot(
+                            df=df,
+                            voltage_col="NLG_AcVoltL1Act",
+                            current_col="NLG_AcCurrL1Act",
+                            ylabel="Generated Power (kW)",
                         )
                     ),
                     "---",
                     "# Battery Charge 🔋\n---",
-                    vis.battery_soc_plot(df=df, soc_column="Pack_SOC"),
+                    vis.battery_soc_plot(df=df, soc_column="BMS_Pack_SOC"),
                 ),
             ),
         )

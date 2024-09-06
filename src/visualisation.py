@@ -144,7 +144,7 @@ def hvplot_df_by_col(df: pd.DataFrame, cols: List[str], xlabel="", ylabel=""):
         )
 
 
-def battery_soc_plot(df: pd.DataFrame, soc_column: str):
+def battery_soc_plot(df: pd.DataFrame, soc_column: str = "BMS_Pack_SOC"):
     if len(df) == 0 or not soc_column:
         return empty_plot
 
@@ -161,7 +161,14 @@ def battery_soc_plot(df: pd.DataFrame, soc_column: str):
         )
 
 
-def power_plot(df: pd.DataFrame, voltage_col="Voltage", current_col="Current"):
+def power_plot(
+    df: pd.DataFrame,
+    voltage_col="Voltage",
+    current_col="Current",
+    ylabel: str = "Power (kW)",
+    color: str = "green",
+    line_color: str = "darkgreen",
+):
     if len(df) == 0:
         return empty_plot
 
@@ -172,11 +179,11 @@ def power_plot(df: pd.DataFrame, voltage_col="Voltage", current_col="Current"):
 
     # render plot:
     return power.hvplot.area(
-        ylabel="Power (kW)",
-        color="green",
+        ylabel=ylabel,
+        color=color,
         alpha=0.7,
         grid=True,
-        line_color="darkgreen",
+        line_color=line_color,
         line_alpha=0.6,
         xlabel="Time (s)",
     )
@@ -186,11 +193,14 @@ def plot_temperatures(
     df: pd.DataFrame,
 ):
     temp_cols = [
-        "TempCurrCool1",
-        "TempCurr1",
-        "ElectricMachineTemperature1",
-        "InverterTemperature1",
-        "TempCurrRotor1",
+        # "TempCurrCool1",
+        # "TempCurr1",
+        # "ElectricMachineTemperature1",
+        # "InverterTemperature1",
+        # "TempCurrRotor1",
+        "BMS_Avg_Temperature",
+        "EMB_ElectricMachineTemperature1",
+        "EMB_InverterTemperature1",
     ]
 
     print("Plotting temperatures: ", temp_cols)

@@ -27,7 +27,7 @@ def kwh_to_co2_saved(kilowatt_hours):
     )
 
 
-def distance_from_speed(df: pd.DataFrame, speed_column: str, gear_ratio: int):
+def distance_from_speed(df: pd.DataFrame, speed_column: str, gear_ratio: float):
     """
     Calculate the distance travelled using speed data over time.
 
@@ -74,14 +74,14 @@ def get_indicators(df: pd.DataFrame, debug: bool = False):
         if debug:
             print(f"DEBUG: total_power = ")
 
-        if "Voltage" in df.columns and "Current" in df.columns:
-            total_power = df["Voltage"] * df["Current"]
+        if "BMS_Pack_Inst_Voltage" in df.columns and "BMS_Pack_Current" in df.columns:
+            total_power = df["BMS_Pack_Inst_Voltage"] * df["BMS_Pack_Current"]
             total_power = total_power[pd.notna(total_power)].sum()
             total_power_kwh = total_power / 1000 / 60 / 60
 
-        if "Speed1" in df.columns:
+        if "EMB_Speed1" in df.columns:
             total_distance = distance_from_speed(
-                df, speed_column="Speed1", gear_ratio=GEAR_RATIO
+                df, speed_column="EMB_Speed1", gear_ratio=GEAR_RATIO
             )
         else:
             print("Speed1 not in columns, skipping card update")
