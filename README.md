@@ -42,7 +42,7 @@ panel serve src/webapp.py
 ```
 
 Here is a preview of what you would see at http://localhost:5006/webapp?theme=default 
-<img width="1202" alt="image" src="https://github.com/user-attachments/assets/1a9b11e1-4c05-4028-8f22-08b898d6fbc5">
+<img width="1170" alt="image" src="https://github.com/user-attachments/assets/f5cd65bf-815f-4611-9185-afcfc6308789">
 
 
 If you would like to make any changes while developing, this command will let you see the results live:
