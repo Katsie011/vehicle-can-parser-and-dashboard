@@ -3,7 +3,9 @@ import panel as pn
 import styling
 from math import pi
 
-VEHICLE_EFFICIENCY = 1
+
+VEHICLE_EFFICIENCY = 0.25  # for a litres per kwh of 0.459 for the vehicle
+DIESEL_KWH_P_LITRE = 9.8
 GEAR_RATIO = 2 * pi / 60 / (6 * 2.741 * 4.75) * 0.5 * 3.6
 ELECTRICITY_COST_CHF_PER_KWh = 98 / 1000
 
@@ -18,12 +20,12 @@ def litres_diesel_to_co2_kg(litres: float):
 
 def kwh_to_l_diesel(kilowatt_hours: float):
     # 9,8 kWh/Liter
-    return kilowatt_hours / 9.8
+    return kilowatt_hours / (DIESEL_KWH_P_LITRE * VEHICLE_EFFICIENCY)
 
 
 def kwh_to_co2_saved(kilowatt_hours):
     return litres_diesel_to_co2_kg(
-        litres=kwh_to_l_diesel(kilowatt_hours=kilowatt_hours) * VEHICLE_EFFICIENCY
+        litres=kwh_to_l_diesel(kilowatt_hours=kilowatt_hours)
     )
 
 
@@ -55,7 +57,7 @@ def distance_from_speed(df: pd.DataFrame, speed_column: str, gear_ratio: float):
     return total_distance
 
 
-def get_indicators(df: pd.DataFrame, debug: bool = False):
+def get_indicators(df: pd.DataFrame, diesel_cost_per_litre=2, debug: bool = False):
     total_power_kwh = -1
     total_distance = -1
     running_cost = -1
@@ -110,6 +112,20 @@ def get_indicators(df: pd.DataFrame, debug: bool = False):
         pn.indicators.Number(
             value=kwh_to_co2_saved(total_power_kwh),
             name="CO2 Emmisions Saved (kg)",
+            format="{value:,.2f}",
+            styles=styling.CARD_STYLE,
+            font_size="48pt",
+        ),
+        # pn.indicators.Number(
+        #     value=kwh_to_l_diesel(total_power_kwh),
+        #     name="Diesel Saved (l)",
+        #     format="{value:,.2f}",
+        #     styles=styling.CARD_STYLE,
+        #     font_size="48pt",
+        # ),
+        pn.indicators.Number(
+            value=kwh_to_l_diesel(total_power_kwh) * diesel_cost_per_litre,
+            name="Diesel Cost Saved (chf)",
             format="{value:,.2f}",
             styles=styling.CARD_STYLE,
             font_size="48pt",
