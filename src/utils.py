@@ -4,7 +4,8 @@ import styling
 from math import pi
 
 
-VEHICLE_EFFICIENCY = 0.25  # for a litres per kwh of 0.459 for the vehicle
+# VEHICLE_EFFICIENCY = 0.25  # for a litres per kwh of 0.459 for the vehicle.
+VEHICLE_EFFICIENCY = 0.4  # for an engine of good efficiency
 DIESEL_KWH_P_LITRE = 9.8
 GEAR_RATIO = 2 * pi / 60 / (6 * 2.741 * 4.75) * 0.5 * 3.6
 ELECTRICITY_COST_CHF_PER_KWh = 98 / 1000
@@ -57,7 +58,23 @@ def distance_from_speed(df: pd.DataFrame, speed_column: str, gear_ratio: float):
     return total_distance
 
 
-def get_indicators(df: pd.DataFrame, diesel_cost_per_litre=2, debug: bool = False):
+def get_total_power_kwh(df: pd.DataFrame, voltage_column, current_column):
+    inst_power = df[voltage_column] * df[current_column]
+    timestamps = df.index
+    time_diffs = timestamps.diff().fillna(0)
+    power = inst_power * time_diffs
+    total_power = power.fillna(0).sum()
+    total_power_kwh = total_power / 1000 / 60 / 60
+    return total_power_kwh
+
+
+def get_indicators(
+    df: pd.DataFrame,
+    diesel_cost_per_litre=2,
+    voltage_col="BMS_Pack_Inst_Voltage",
+    current_col="BMS_Pack_Current",
+    debug: bool = False,
+):
     total_power_kwh = -1
     total_distance = -1
     running_cost = -1
@@ -76,10 +93,10 @@ def get_indicators(df: pd.DataFrame, diesel_cost_per_litre=2, debug: bool = Fals
         if debug:
             print(f"DEBUG: total_power = ")
 
-        if "BMS_Pack_Inst_Voltage" in df.columns and "BMS_Pack_Current" in df.columns:
-            total_power = df["BMS_Pack_Inst_Voltage"] * df["BMS_Pack_Current"]
-            total_power = total_power[pd.notna(total_power)].sum()
-            total_power_kwh = total_power / 1000 / 60 / 60
+        if voltage_col in df.columns and current_col in df.columns:
+            total_power_kwh = get_total_power_kwh(
+                df, voltage_column=voltage_col, current_column=current_col
+            )
 
         if "EMB_Speed1" in df.columns:
             total_distance = distance_from_speed(
@@ -130,13 +147,13 @@ def get_indicators(df: pd.DataFrame, diesel_cost_per_litre=2, debug: bool = Fals
             styles=styling.CARD_STYLE,
             font_size="48pt",
         ),
-        pn.indicators.Number(
-            value=total_power_kwh * ELECTRICITY_COST_CHF_PER_KWh,
-            name="Electricity Cost (chf)",
-            format="{value:,.2f}",
-            styles=styling.CARD_STYLE,
-            font_size="48pt",
-        ),
+        # pn.indicators.Number(
+        #     value=total_power_kwh * ELECTRICITY_COST_CHF_PER_KWh,
+        #     name="Electricity Cost (chf)",
+        #     format="{value:,.2f}",
+        #     styles=styling.CARD_STYLE,
+        #     font_size="48pt",
+        # ),
         margin=(20, 5),
     )
     return indicators
