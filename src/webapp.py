@@ -77,12 +77,14 @@ def create_app(file_list=None):
                             ylabel="Power Used (kW)",
                             color="yellow",
                             line_color="orange",
+                            label="Battery",
                         )
                         * vis.power_plot(
                             df=df,
-                            voltage_col="NLG_AcVoltL1Act",
-                            current_col="NLG_AcCurrL1Act",
+                            voltage_col="NLG_DcHvVoltAct",
+                            current_col="NLG_DcHvCurrAct",
                             ylabel="Generated Power (kW)",
+                            label="Generator",
                         )
                     ),
                     "---",

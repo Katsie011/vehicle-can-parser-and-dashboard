@@ -73,12 +73,15 @@ def get_indicators(
     diesel_cost_per_litre=2,
     voltage_col="BMS_Pack_Inst_Voltage",
     current_col="BMS_Pack_Current",
+    gen_vol_col="NLG_DcHvVoltAct",
+    gen_cur_col="NLG_DcHvCurrAct",
     debug: bool = False,
 ):
     total_power_kwh = -1
     total_distance = -1
     running_cost = -1
     time_string = "Empty data"
+    generated_kwh = -1
 
     if len(df.index):
         if debug:
@@ -96,6 +99,11 @@ def get_indicators(
         if voltage_col in df.columns and current_col in df.columns:
             total_power_kwh = get_total_power_kwh(
                 df, voltage_column=voltage_col, current_column=current_col
+            )
+
+        if gen_cur_col in df.columns and gen_vol_col in df.columns:
+            generated_kwh = get_total_power_kwh(
+                df=df, voltage_column=gen_vol_col, current_column=gen_cur_col
             )
 
         if "EMB_Speed1" in df.columns:
@@ -116,6 +124,13 @@ def get_indicators(
             value=total_power_kwh,
             name="Power Consumed (kWh)",
             format="{value:,.3f}",
+            styles=styling.CARD_STYLE,
+            font_size="48pt",
+        ),
+        pn.indicators.Number(
+            value=generated_kwh,
+            name="Power Generated (kWh)",
+            format="{value:,.6f}",
             styles=styling.CARD_STYLE,
             font_size="48pt",
         ),

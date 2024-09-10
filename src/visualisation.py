@@ -168,6 +168,7 @@ def power_plot(
     ylabel: str = "Power (kW)",
     color: str = "green",
     line_color: str = "darkgreen",
+    label="",
 ):
     if len(df) == 0:
         return empty_plot
@@ -186,6 +187,7 @@ def power_plot(
         line_color=line_color,
         line_alpha=0.6,
         xlabel="Time (s)",
+        label=label,
     )
 
 
